@@ -23,10 +23,8 @@ frontend https_front
 
 backend livelink_back
     balance roundrobin
-    option httpchk GET /health
-    http-check expect status 200
-    server web01 10.227.106.250:8080 check
-    server web02 10.227.13.33:8080 check
+    server web01 10.227.106.250:80 check
+    server web02 10.227.13.33:80 check
 
 listen stats
     bind *:8404
