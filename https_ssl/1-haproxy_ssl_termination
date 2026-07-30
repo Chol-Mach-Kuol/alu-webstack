@@ -1,0 +1,35 @@
+global
+    log /dev/log local0
+    maxconn 2048
+    daemon
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5s
+    timeout client  30s
+    timeout server  30s
+    retries 3
+
+frontend http_front
+    bind *:80
+    default_backend livelink_back
+
+frontend https_front
+    bind *:443 ssl crt /etc/letsencrypt/live/www.cholkuol.tech/www.cholkuol.tech.pem
+    default_backend livelink_back
+
+backend livelink_back
+    balance roundrobin
+    option httpchk GET /health
+    http-check expect status 200
+    server web01 10.227.106.250:8080 check
+    server web02 10.227.13.33:8080 check
+
+listen stats
+    bind *:8404
+    stats enable
+    stats uri /stats
+    stats refresh 5s
